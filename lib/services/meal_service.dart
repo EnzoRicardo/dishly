@@ -7,7 +7,7 @@ import '../models/meal.dart';
 class MealService {
   static const String baseUrl = 'https://www.themealdb.com/api/json/v1/1';
 
-  Future<List<Meal>> searchMeals(String query) async {
+  Future<List<Meal>> searchMeals([String query = '']) async {
     final url = Uri.parse('$baseUrl/search.php?s=$query');
 
     final response = await http.get(url);
@@ -27,6 +27,14 @@ class MealService {
     }
 
     throw Exception('Erro ao buscar pratos');
+  }
+
+  List<String> getImages(List<Meal> meals,
+      [ImageSize size = ImageSize.defaultSize]) {
+    return meals
+        .map((meal) => meal.getImage(size))
+        .where((imageUrl) => imageUrl.isNotEmpty)
+        .toList();
   }
 
   Future<Meal?> getMealById(String id) async {
