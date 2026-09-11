@@ -26,8 +26,8 @@ class Meal {
     );
   }
 
-  String getImage([ImageSize? size = ImageSize.defaultSize]) {
-    if (size == null || image.isEmpty) return image;
+  String getImage([ImageSize size = ImageSize.defaultSize]) {
+    if (image.isEmpty) return image;
     return '$image/${size.name}';
   }
 }
