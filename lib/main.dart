@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'services/meal_service.dart';
+import 'repositories/meal_repository.dart';
+import 'repositories/meal_repository_impl.dart';
+import 'screens/meals_screen.dart';
+import 'viewmodels/meals_view_model.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  final mealService = MealService();
-
-  try {
-    final meals = await mealService.searchMeals('chicken');
-
-    for (final meal in meals) {
-      debugPrint('Nome: ${meal.name}');
-      debugPrint('ID: ${meal.id}');
-      debugPrint('Imagem: ${meal.image}');
-      debugPrint('------------------');
-    }
-  } catch (e) {
-    debugPrint('Erro: $e');
-  }
-
-  runApp(const DishlyApp());
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<MealRepository>(create: (_) => MealRepositoryImpl()),
+        ChangeNotifierProvider<MealsViewModel>(
+          create: (context) => MealsViewModel(context.read<MealRepository>()),
+        ),
+      ],
+      child: const DishlyApp(),
+    ),
+  );
 }
 
 class DishlyApp extends StatelessWidget {
@@ -29,18 +26,13 @@ class DishlyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Dishly',
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(
-          child: Text(
-            'Dishly',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        useMaterial3: true,
       ),
-    ); 
+      home: const MealsScreen(),
+    );
   }
 }

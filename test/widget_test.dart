@@ -5,26 +5,52 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
 import 'package:dishly/main.dart';
+import 'package:dishly/models/meal.dart';
+import 'package:dishly/repositories/meal_repository.dart';
+import 'package:dishly/viewmodels/meals_view_model.dart';
+
+class FakeMealRepository implements MealRepository {
+  @override
+  Future<List<Meal>> searchMeals([String query = '']) async => [];
+
+  @override
+  Future<Meal?> getMealById(String id) async => null;
+
+  @override
+  Future<Meal?> getRandomMeal() async => null;
+
+  @override
+  Future<List<String>> getCategories() async => [];
+
+  @override
+  Future<List<Meal>> getMealsByCategory(String category) async => [];
+
+  @override
+  List<String> getImages(List<Meal> meals,
+          [ImageSize size = ImageSize.defaultSize]) =>
+      [];
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const DishlyApp());
+  testWidgets('DishlyApp smoke test', (WidgetTester tester) async {
+    final fakeRepo = FakeMealRepository();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          Provider<MealRepository>.value(value: fakeRepo),
+          ChangeNotifierProvider<MealsViewModel>(
+            create: (_) => MealsViewModel(fakeRepo),
+          ),
+        ],
+        child: const DishlyApp(),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(DishlyApp), findsOneWidget);
   });
 }

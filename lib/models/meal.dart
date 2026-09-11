@@ -25,4 +25,20 @@ class Meal {
       instructions: json['strInstructions'],
     );
   }
+
+  String getImage([ImageSize size = ImageSize.defaultSize]) {
+    if (image.isEmpty) return image;
+    return '$image/${size.name}';
+  }
+}
+
+enum ImageSize {
+  small(150),
+  medium(350),
+  large(500);
+
+  final double maxExtent;
+  const ImageSize(this.maxExtent);
+
+  static const ImageSize defaultSize = ImageSize.small;
 }
