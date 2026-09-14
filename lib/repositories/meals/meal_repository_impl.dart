@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../models/meal.dart';
+import '../../models/meal.dart';
 import 'meal_repository.dart';
 
 class MealRepositoryImpl implements MealRepository {
@@ -110,13 +110,5 @@ class MealRepositoryImpl implements MealRepository {
     }
 
     throw Exception('Erro ao buscar pratos por categoria');
-  }
-
-  @override
-  List<String> getImages(List<Meal> meals, [ImageSize size = ImageSize.defaultSize]) {
-    return meals
-        .map((meal) => meal.getImage(size))
-        .where((imageUrl) => imageUrl.isNotEmpty)
-        .toList();
   }
 }

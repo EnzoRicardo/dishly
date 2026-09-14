@@ -79,8 +79,6 @@ class Meal {
 
 typedef MealIngredient = ({String name, String measure});
 
-
-
 enum ImageSize {
   small(150),
   medium(350),

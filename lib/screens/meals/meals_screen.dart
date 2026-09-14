@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../viewmodels/meals_view_model.dart';
-import '../widgets/image_size_selector.dart';
-import '../widgets/meals_grid.dart';
-import '../widgets/meal_search_bar.dart';
-import 'favorites_screen.dart';
+import '../../viewmodels/meals/meals_view_model.dart';
+import '../../widgets/collection_nav_actions.dart';
+import '../../widgets/image_size_selector.dart';
+import '../../widgets/meals_grid.dart';
+import '../../widgets/meal_search_bar.dart';
 
 class MealsScreen extends StatefulWidget {
   const MealsScreen({super.key});
@@ -32,18 +32,7 @@ class _MealsScreenState extends State<MealsScreen> {
         title: const Text('Pratos da API'),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite_outline),
-            tooltip: 'Meus Favoritos',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const FavoritesScreen(),
-                ),
-              );
-            },
-          ),
+          const CollectionNavActions(),
           ImageSizeSelector(
             selectedSize: viewModel.selectedSize,
             onSelected: (size) {

@@ -10,8 +10,8 @@ import 'package:provider/provider.dart';
 
 import 'package:dishly/main.dart';
 import 'package:dishly/models/meal.dart';
-import 'package:dishly/repositories/meal_repository.dart';
-import 'package:dishly/viewmodels/meals_view_model.dart';
+import 'package:dishly/repositories/meals/meal_repository.dart';
+import 'package:dishly/viewmodels/meals/meals_view_model.dart';
 
 class FakeMealRepository implements MealRepository {
   @override
@@ -28,11 +28,6 @@ class FakeMealRepository implements MealRepository {
 
   @override
   Future<List<Meal>> getMealsByCategory(String category) async => [];
-
-  @override
-  List<String> getImages(List<Meal> meals,
-          [ImageSize size = ImageSize.defaultSize]) =>
-      [];
 }
 
 void main() {

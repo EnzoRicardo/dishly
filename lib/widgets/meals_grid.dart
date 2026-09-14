@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/meal.dart';
-import '../screens/meal_detail_screen.dart';
+import '../screens/meals/meal_detail_screen.dart';
 import 'meal_card.dart';
 
 class MealsGrid extends StatelessWidget {

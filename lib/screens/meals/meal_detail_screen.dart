@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/meal.dart';
-import '../repositories/favorites_repository.dart';
-import '../repositories/meal_repository.dart';
-import '../viewmodels/meal_detail_view_model.dart';
+import '../../models/collection_type.dart';
+import '../../models/meal.dart';
+import '../../repositories/collections/cooked_meals_repository.dart';
+import '../../repositories/collections/favorites_repository.dart';
+import '../../repositories/meals/meal_repository.dart';
+import '../../viewmodels/meals/meal_detail_view_model.dart';
 
 class MealDetailScreen extends StatefulWidget {
   final String mealId;
@@ -23,7 +25,10 @@ class MealDetailScreen extends StatefulWidget {
         builder: (_) => ChangeNotifierProvider(
           create: (ctx) => MealDetailViewModel(
             ctx.read<MealRepository>(),
-            ctx.read<FavoritesRepository>(),
+            {
+              CollectionType.favorites: ctx.read<FavoritesRepository>(),
+              CollectionType.cooked: ctx.read<CookedMealsRepository>(),
+            },
           ),
           child: MealDetailScreen(
             mealId: meal.id,
@@ -54,19 +59,20 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.mealName),
-        actions: [
-          IconButton(
-            isSelected: viewModel.isFavorite,
-            icon: const Icon(Icons.star_outline_rounded),
-            selectedIcon: const Icon(Icons.star_rounded, color: Colors.amber),
-            tooltip: viewModel.isFavorite
-                ? 'Remover dos favoritos'
-                : 'Adicionar aos favoritos',
+        actions: CollectionType.values.map((type) {
+          final isSelected = viewModel.isInCollection(type);
+          return IconButton(
+            isSelected: isSelected,
+            icon: Icon(type.icon),
+            selectedIcon: Icon(type.selectedIcon, color: type.activeColor),
+            tooltip: isSelected ? type.activeTooltip : type.inactiveTooltip,
             onPressed: viewModel.meal != null
-                ? () => context.read<MealDetailViewModel>().toggleFavorite()
+                ? () => context
+                    .read<MealDetailViewModel>()
+                    .toggleCollection(type)
                 : null,
-          ),
-        ],
+          );
+        }).toList(),
       ),
       body: Builder(
         builder: (context) {

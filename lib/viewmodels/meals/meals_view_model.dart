@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import '../models/meal.dart';
-import '../repositories/meal_repository.dart';
+import '../../models/meal.dart';
+import '../../repositories/meals/meal_repository.dart';
 
 class MealsViewModel extends ChangeNotifier {
   final MealRepository _repository;
@@ -58,9 +58,5 @@ class MealsViewModel extends ChangeNotifier {
       _selectedSize = size;
       notifyListeners();
     }
-  }
-
-  List<String> getImages([ImageSize? size]) {
-    return _repository.getImages(_allMeals, size ?? _selectedSize);
   }
 }

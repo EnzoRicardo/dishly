@@ -1,30 +1,30 @@
 import 'package:flutter/foundation.dart';
 
-import '../models/meal.dart';
-import '../repositories/favorites_repository.dart';
+import '../../models/meal.dart';
+import '../../repositories/collections/meal_collection_repository.dart';
 
-class FavoritesViewModel extends ChangeNotifier {
-  final FavoritesRepository _favoritesRepository;
+class MealCollectionViewModel extends ChangeNotifier {
+  final MealCollectionRepository repository;
 
-  List<Meal> _favorites = [];
+  List<Meal> _meals = [];
   bool _isLoading = false;
   ImageSize _selectedSize = ImageSize.defaultSize;
   String _searchQuery = '';
 
-  FavoritesViewModel(this._favoritesRepository);
+  MealCollectionViewModel(this.repository);
 
-  List<Meal> get favorites => _favorites;
+  List<Meal> get meals => _meals;
   bool get isLoading => _isLoading;
-  bool get isEmpty => _favorites.isEmpty;
+  bool get isEmpty => _meals.isEmpty;
   ImageSize get selectedSize => _selectedSize;
   String get searchQuery => _searchQuery;
 
-  List<Meal> get displayedFavorites {
+  List<Meal> get displayedMeals {
     if (_searchQuery.isEmpty) {
-      return _favorites;
+      return _meals;
     }
     final lower = _searchQuery.toLowerCase();
-    return _favorites
+    return _meals
         .where((meal) =>
             meal.name.toLowerCase().contains(lower) ||
             (meal.category?.toLowerCase().contains(lower) ?? false) ||
@@ -32,11 +32,11 @@ class FavoritesViewModel extends ChangeNotifier {
         .toList();
   }
 
-  Future<void> loadFavorites() async {
+  Future<void> loadMeals() async {
     _isLoading = true;
     notifyListeners();
 
-    _favorites = await _favoritesRepository.getFavorites();
+    _meals = await repository.getMeals();
     _isLoading = false;
     notifyListeners();
   }
@@ -53,9 +53,9 @@ class FavoritesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeFavorite(Meal meal) async {
-    await _favoritesRepository.toggleFavorite(meal);
-    _favorites.removeWhere((item) => item.id == meal.id);
+  Future<void> remove(Meal meal) async {
+    await repository.toggle(meal);
+    _meals.removeWhere((item) => item.id == meal.id);
     notifyListeners();
   }
 }
