@@ -6,6 +6,7 @@ import 'repositories/favorites_repository_impl.dart';
 import 'repositories/meal_repository.dart';
 import 'repositories/meal_repository_impl.dart';
 import 'screens/meals_screen.dart';
+import 'viewmodels/favorites_view_model.dart';
 import 'viewmodels/meals_view_model.dart';
 
 void main() {
@@ -16,6 +17,10 @@ void main() {
         Provider<FavoritesRepository>(create: (_) => FavoritesRepositoryImpl()),
         ChangeNotifierProvider<MealsViewModel>(
           create: (context) => MealsViewModel(context.read<MealRepository>()),
+        ),
+        ChangeNotifierProvider<FavoritesViewModel>(
+          create: (context) =>
+              FavoritesViewModel(context.read<FavoritesRepository>()),
         ),
       ],
       child: const DishlyApp(),

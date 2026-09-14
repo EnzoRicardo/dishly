@@ -1,0 +1,56 @@
+import 'package:flutter/material.dart';
+
+import '../models/meal.dart';
+import '../screens/meal_detail_screen.dart';
+import 'meal_card.dart';
+
+class MealsGrid extends StatelessWidget {
+  final List<Meal> meals;
+  final ImageSize size;
+  final EdgeInsetsGeometry padding;
+  final Future<void> Function(Meal meal)? onMealTap;
+
+  const MealsGrid({
+    super.key,
+    required this.meals,
+    required this.size,
+    this.padding = const EdgeInsets.all(16.0),
+    this.onMealTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: padding,
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: size.maxExtent,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.8,
+        ),
+        itemCount: meals.length,
+        itemBuilder: (context, index) {
+          final meal = meals[index];
+
+          return InkWell(
+            mouseCursor: SystemMouseCursors.click,
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              if (onMealTap != null) {
+                onMealTap!(meal);
+              } else {
+                MealDetailScreen.navigate(context, meal);
+              }
+            },
+            child: MealCard(
+              meal: meal,
+              size: size,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+

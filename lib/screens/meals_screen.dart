@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/meal.dart';
-import 'meal_detail_screen.dart';
-import '../repositories/favorites_repository.dart';
-import '../repositories/meal_repository.dart';
 import '../viewmodels/meals_view_model.dart';
-import '../viewmodels/meal_detail_view_model.dart';
-import '../widgets/meal_card.dart';
+import '../widgets/image_size_selector.dart';
+import '../widgets/meals_grid.dart';
 import '../widgets/meal_search_bar.dart';
+import 'favorites_screen.dart';
 
 class MealsScreen extends StatefulWidget {
   const MealsScreen({super.key});
@@ -35,27 +32,23 @@ class _MealsScreenState extends State<MealsScreen> {
         title: const Text('Pratos da API'),
         centerTitle: true,
         actions: [
-          PopupMenuButton<ImageSize>(
-            icon: const Icon(Icons.photo_size_select_actual_outlined),
-            tooltip: 'Tamanho da Imagem',
-            initialValue: viewModel.selectedSize,
+          IconButton(
+            icon: const Icon(Icons.favorite_outline),
+            tooltip: 'Meus Favoritos',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FavoritesScreen(),
+                ),
+              );
+            },
+          ),
+          ImageSizeSelector(
+            selectedSize: viewModel.selectedSize,
             onSelected: (size) {
               context.read<MealsViewModel>().setSelectedSize(size);
             },
-            itemBuilder: (context) => const [
-              PopupMenuItem(
-                value: ImageSize.small,
-                child: Text('Pequeno (150px)'),
-              ),
-              PopupMenuItem(
-                value: ImageSize.medium,
-                child: Text('Médio (350px)'),
-              ),
-              PopupMenuItem(
-                value: ImageSize.large,
-                child: Text('Grande (500px)'),
-              ),
-            ],
           ),
         ],
       ),
@@ -84,46 +77,10 @@ class _MealsScreenState extends State<MealsScreen> {
                   return const Center(child: Text('Nenhum prato encontrado.'));
                 }
 
-                return Padding(
+                return MealsGrid(
+                  meals: viewModel.displayedMeals,
+                  size: viewModel.selectedSize,
                   padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 80.0),
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: viewModel.selectedSize.maxExtent,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.8,
-                    ),
-                    itemCount: viewModel.displayedMeals.length,
-                    itemBuilder: (context, index) {
-                      final meal = viewModel.displayedMeals[index];
-
-                      return InkWell(
-                        mouseCursor: SystemMouseCursors.click,
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (ctx) => MealDetailViewModel(
-                                  ctx.read<MealRepository>(),
-                                  ctx.read<FavoritesRepository>(),
-                                ),
-                                child: MealDetailScreen(
-                                  mealId: meal.id,
-                                  mealName: meal.name,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        child: MealCard(
-                          meal: meal,
-                          size: viewModel.selectedSize,
-                        ),
-                      );
-                    },
-                  ),
                 );
               },
             ),
