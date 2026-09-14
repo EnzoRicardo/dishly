@@ -5,6 +5,7 @@ import '../repositories/meal_repository.dart';
 
 class MealsViewModel extends ChangeNotifier {
   final MealRepository _repository;
+  MealsViewModel(this._repository);
 
   static const int pageSize = 6;
   int _visibleCount = pageSize;
@@ -14,8 +15,6 @@ class MealsViewModel extends ChangeNotifier {
   List<Meal> _allMeals = [];
   ImageSize _selectedSize = ImageSize.defaultSize;
   String _currentQuery = '';
-
-  MealsViewModel(this._repository);
 
   List<Meal> get allMeals => _allMeals;
   List<Meal> get displayedMeals => _allMeals.take(_visibleCount).toList();

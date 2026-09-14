@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/meal.dart';
+import 'meal_detail_screen.dart';
+import '../repositories/meal_repository.dart';
 import '../viewmodels/meals_view_model.dart';
+import '../viewmodels/meal_detail_view_model.dart';
 import '../widgets/meal_card.dart';
 import '../widgets/meal_search_bar.dart';
 
@@ -91,9 +94,31 @@ class _MealsScreenState extends State<MealsScreen> {
                     ),
                     itemCount: viewModel.displayedMeals.length,
                     itemBuilder: (context, index) {
-                      return MealCard(
-                        meal: viewModel.displayedMeals[index],
-                        size: viewModel.selectedSize,
+                      final meal = viewModel.displayedMeals[index];
+
+                      return InkWell(
+                        mouseCursor: SystemMouseCursors.click,
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (ctx) => MealDetailViewModel(
+                                  ctx.read<MealRepository>(),
+                                ),
+                                child: MealDetailScreen(
+                                  mealId: meal.id,
+                                  mealName: meal.name,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: MealCard(
+                          meal: meal,
+                          size: viewModel.selectedSize,
+                        ),
                       );
                     },
                   ),

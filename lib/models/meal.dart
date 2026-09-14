@@ -5,6 +5,10 @@ class Meal {
   final String? category;
   final String? area;
   final String? instructions;
+  final String? tags;
+  final String? youtubeUrl;
+  final String? sourceUrl;
+  final List<MealIngredient> ingredients;
 
   Meal({
     required this.id,
@@ -13,9 +17,25 @@ class Meal {
     this.category,
     this.area,
     this.instructions,
+    this.tags,
+    this.youtubeUrl,
+    this.sourceUrl,
+    this.ingredients = const [],
   });
 
   factory Meal.fromJson(Map<String, dynamic> json) {
+    final ingredients = <MealIngredient>[];
+    for (var i = 1; i <= 20; i++) {
+      final ingredient = json['strIngredient$i'];
+      final measure = json['strMeasure$i'];
+      if (ingredient is String && ingredient.trim().isNotEmpty) {
+        ingredients.add((
+          name: ingredient.trim(),
+          measure: (measure is String ? measure.trim() : ''),
+        ));
+      }
+    }
+    
     return Meal(
       id: json['idMeal'] ?? '',
       name: json['strMeal'] ?? '',
@@ -23,6 +43,10 @@ class Meal {
       category: json['strCategory'],
       area: json['strArea'],
       instructions: json['strInstructions'],
+      tags: json['strTags'],
+      youtubeUrl: json['strYoutube'],
+      sourceUrl: json['strSource'],
+      ingredients: ingredients,
     );
   }
 
@@ -31,6 +55,10 @@ class Meal {
     return '$image/${size.name}';
   }
 }
+
+typedef MealIngredient = ({String name, String measure});
+
+
 
 enum ImageSize {
   small(150),
