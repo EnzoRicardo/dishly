@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'repositories/favorites_repository.dart';
+import 'repositories/favorites_repository_impl.dart';
 import 'repositories/meal_repository.dart';
 import 'repositories/meal_repository_impl.dart';
 import 'screens/meals_screen.dart';
@@ -11,6 +13,7 @@ void main() {
     MultiProvider(
       providers: [
         Provider<MealRepository>(create: (_) => MealRepositoryImpl()),
+        Provider<FavoritesRepository>(create: (_) => FavoritesRepositoryImpl()),
         ChangeNotifierProvider<MealsViewModel>(
           create: (context) => MealsViewModel(context.read<MealRepository>()),
         ),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../models/meal.dart';
 import 'meal_detail_screen.dart';
+import '../repositories/favorites_repository.dart';
 import '../repositories/meal_repository.dart';
 import '../viewmodels/meals_view_model.dart';
 import '../viewmodels/meal_detail_view_model.dart';
@@ -106,6 +107,7 @@ class _MealsScreenState extends State<MealsScreen> {
                               builder: (_) => ChangeNotifierProvider(
                                 create: (ctx) => MealDetailViewModel(
                                   ctx.read<MealRepository>(),
+                                  ctx.read<FavoritesRepository>(),
                                 ),
                                 child: MealDetailScreen(
                                   mealId: meal.id,

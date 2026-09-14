@@ -54,6 +54,27 @@ class Meal {
     if (image.isEmpty) return image;
     return '$image/${size.name}';
   }
+
+  Map<String, dynamic> toJson() {
+    final mealJson = <String, dynamic>{
+      'idMeal': id,
+      'strMeal': name,
+      'strMealThumb': image,
+      'strCategory': category,
+      'strArea': area,
+      'strInstructions': instructions,
+      'strTags': tags,
+      'strYoutube': youtubeUrl,
+      'strSource': sourceUrl,
+    };
+
+    for (var i = 0; i < ingredients.length && i < 20; i++) {
+      mealJson['strIngredient${i + 1}'] = ingredients[i].name;
+      mealJson['strMeasure${i + 1}'] = ingredients[i].measure;
+    }
+
+    return mealJson;
+  }
 }
 
 typedef MealIngredient = ({String name, String measure});

@@ -32,7 +32,22 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
     final viewModel = context.watch<MealDetailViewModel>();
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.mealName)),
+      appBar: AppBar(
+        title: Text(widget.mealName),
+        actions: [
+          IconButton(
+            isSelected: viewModel.isFavorite,
+            icon: const Icon(Icons.star_outline_rounded),
+            selectedIcon: const Icon(Icons.star_rounded, color: Colors.amber),
+            tooltip: viewModel.isFavorite
+                ? 'Remover dos favoritos'
+                : 'Adicionar aos favoritos',
+            onPressed: viewModel.meal != null
+                ? () => context.read<MealDetailViewModel>().toggleFavorite()
+                : null,
+          ),
+        ],
+      ),
       body: Builder(
         builder: (context) {
           if (viewModel.isLoading) {
@@ -69,7 +84,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                   meal.getImage(ImageSize.large),
                   height: 260,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox(
+                  errorBuilder: (context, error, stackTrace) => const SizedBox(
                     height: 200,
                     child: Icon(Icons.broken_image, size: 64),
                   ),
@@ -124,7 +139,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: Column(
-                              children: meal.ingredients.map((item) {
+                              children: meal.ingredients.map((ingredient) {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 4.0,
@@ -139,14 +154,14 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          item.name,
+                                          ingredient.name,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
                                       ),
                                       Text(
-                                        item.measure,
+                                        ingredient.measure,
                                         style: TextStyle(
                                           color: Colors.grey[700],
                                         ),

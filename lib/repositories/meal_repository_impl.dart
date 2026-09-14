@@ -17,8 +17,8 @@ class MealRepositoryImpl implements MealRepository {
     final response = await _client.get(url);
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final mealsJson = data['meals'];
+      final responseJson = jsonDecode(response.body);
+      final mealsJson = responseJson['meals'];
 
       if (mealsJson == null) {
         return [];
@@ -38,8 +38,8 @@ class MealRepositoryImpl implements MealRepository {
     final response = await _client.get(url);
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final mealsJson = data['meals'];
+      final responseJson = jsonDecode(response.body);
+      final mealsJson = responseJson['meals'];
 
       if (mealsJson == null || mealsJson.isEmpty) {
         return null;
@@ -57,8 +57,8 @@ class MealRepositoryImpl implements MealRepository {
     final response = await _client.get(url);
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final mealsJson = data['meals'];
+      final responseJson = jsonDecode(response.body);
+      final mealsJson = responseJson['meals'];
 
       if (mealsJson == null || mealsJson.isEmpty) {
         return null;
@@ -76,8 +76,8 @@ class MealRepositoryImpl implements MealRepository {
     final response = await _client.get(url);
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final categoriesJson = data['meals'];
+      final responseJson = jsonDecode(response.body);
+      final categoriesJson = responseJson['meals'];
 
       if (categoriesJson == null) {
         return [];
@@ -97,8 +97,8 @@ class MealRepositoryImpl implements MealRepository {
     final response = await _client.get(url);
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final mealsJson = data['meals'];
+      final responseJson = jsonDecode(response.body);
+      final mealsJson = responseJson['meals'];
 
       if (mealsJson == null) {
         return [];
