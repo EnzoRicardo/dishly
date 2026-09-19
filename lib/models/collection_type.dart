@@ -9,8 +9,8 @@ enum CollectionType {
     inactiveTooltip: 'Marcar como feitos',
   ),
   favorites(
-    icon: Icons.star_outline_rounded,
-    selectedIcon: Icons.star_rounded,
+    icon: Icons.favorite_outline,
+    selectedIcon: Icons.favorite,
     activeColor: Colors.amber,
     activeTooltip: 'Remover dos favoritos',
     inactiveTooltip: 'Adicionar aos favoritos',
@@ -30,4 +30,3 @@ enum CollectionType {
     required this.inactiveTooltip,
   });
 }
-
