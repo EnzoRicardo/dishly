@@ -13,7 +13,9 @@ class MealRepositoryImpl implements MealRepository {
 
   @override
   Future<List<Meal>> searchMeals([String query = '']) async {
-    final url = Uri.parse('$baseUrl/search.php?s=$query');
+    final url = Uri.parse(
+      '$baseUrl/search.php?s=${Uri.encodeQueryComponent(query.trim())}',
+    );
     final response = await _client.get(url);
 
     if (response.statusCode == 200) {
