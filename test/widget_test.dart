@@ -42,7 +42,7 @@ void main() {
             create: (_) => MealsViewModel(fakeRepo),
           ),
         ],
-        child: const DishlyApp(),
+        child: DishlyApp(),
       ),
     );
 

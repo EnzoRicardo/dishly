@@ -32,22 +32,68 @@ void main() {
               CookedMealsViewModel(context.read<CookedMealsRepository>()),
         ),
       ],
-      child: const DishlyApp(),
+      child: DishlyApp(),
     ),
   );
 }
 
 class DishlyApp extends StatelessWidget {
-  const DishlyApp({super.key});
+  DishlyApp({super.key});
+
+  final colorScheme = ColorScheme.fromSeed(seedColor: Colors.deepOrange);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Dishly',
       debugShowCheckedModeBanner: false,
+      builder: (context, child) => GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        excludeFromSemantics: true,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: child,
+      ),
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        colorScheme: colorScheme,
         useMaterial3: true,
+        scaffoldBackgroundColor: colorScheme.surface,
+        fontFamily: 'Raleway',
+
+        inputDecorationTheme: InputDecorationTheme(
+          filled: false,
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: colorScheme.outlineVariant),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: colorScheme.outlineVariant),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: colorScheme.primary, width: 1.6),
+          ),
+          labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+        ),
+
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(56),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ),
       ),
       home: const MealsScreen(),
     );
