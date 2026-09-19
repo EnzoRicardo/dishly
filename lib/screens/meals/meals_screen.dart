@@ -111,7 +111,7 @@ class _MealsScreenState extends State<MealsScreen> {
                 return MealsGrid(
                   meals: viewModel.displayedMeals,
                   size: viewModel.selectedSize,
-                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 80.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 88.0),
                 );
               },
             ),
