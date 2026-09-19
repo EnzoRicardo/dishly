@@ -32,17 +32,19 @@ class MealsGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         final meal = meals[index];
 
-        return InkWell(
-          mouseCursor: SystemMouseCursors.click,
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            if (onMealTap != null) {
-              onMealTap!(meal);
-            } else {
-              MealDetailScreen.navigate(context, meal);
-            }
-          },
-          child: MealCard(meal: meal, size: size),
+        return MergeSemantics(
+          child: InkWell(
+            mouseCursor: SystemMouseCursors.click,
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              if (onMealTap != null) {
+                onMealTap!(meal);
+              } else {
+                MealDetailScreen.navigate(context, meal);
+              }
+            },
+            child: MealCard(meal: meal, size: size),
+          ),
         );
       },
     );

@@ -37,10 +37,11 @@ class _MealSearchBarState extends State<MealSearchBar> {
       child: TextField(
         controller: _controller,
         decoration: InputDecoration(
-          hintText: widget.hintText,
+          labelText: widget.hintText,
           prefixIcon: const Icon(Icons.search),
           suffixIcon: IconButton(
             icon: const Icon(Icons.clear),
+            tooltip: 'Limpar busca',
             onPressed: _clear,
           ),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),

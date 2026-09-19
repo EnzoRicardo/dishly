@@ -60,7 +60,11 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
       body: Builder(
         builder: (context) {
           if (viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: 'Carregando pratos',
+              ),
+            );
           }
 
           if (viewModel.isEmpty) {
@@ -68,17 +72,22 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    widget.emptyIcon,
-                    size: 64,
-                    color: Colors.grey[400],
+                  ExcludeSemantics(
+                    child: Icon(
+                      widget.emptyIcon,
+                      size: 64,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    widget.emptyMessage,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      widget.emptyMessage,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],
@@ -100,11 +109,16 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
               Expanded(
                 child: viewModel.displayedMeals.isEmpty
                     ? Center(
-                        child: Text(
-                          'Nenhum prato encontrado para "${viewModel.searchQuery}".',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.grey[600],
+                        child: Semantics(
+                          liveRegion: true,
+                          child: Text(
+                            'Nenhum prato encontrado para "${viewModel.searchQuery}".',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
                           ),
                         ),
                       )

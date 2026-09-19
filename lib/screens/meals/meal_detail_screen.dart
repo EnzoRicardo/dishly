@@ -77,7 +77,11 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
       body: Builder(
         builder: (context) {
           if (viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: 'Carregando prato',
+              ),
+            );
           }
 
           if (viewModel.errorMessage != null) {
@@ -85,7 +89,10 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(viewModel.errorMessage!),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(viewModel.errorMessage!),
+                  ),
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () => viewModel.loadMealById(widget.mealId),
@@ -98,7 +105,12 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
 
           final meal = viewModel.meal;
           if (meal == null) {
-            return const Center(child: Text('Prato não encontrado.'));
+            return Center(
+              child: Semantics(
+                liveRegion: true,
+                child: const Text('Prato não encontrado.'),
+              ),
+            );
           }
 
           return SingleChildScrollView(
@@ -110,9 +122,14 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                   meal.getImage(ImageSize.large),
                   height: 260,
                   fit: BoxFit.cover,
+                  semanticLabel: 'Foto do prato ${meal.name}',
                   errorBuilder: (context, error, stackTrace) => const SizedBox(
                     height: 200,
-                    child: Icon(Icons.broken_image, size: 64),
+                    child: Icon(
+                      Icons.broken_image,
+                      size: 64,
+                      semanticLabel: 'Imagem do prato indisponível',
+                    ),
                   ),
                 ),
 
@@ -170,29 +187,37 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 4.0,
                                   ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.circle,
-                                        size: 8,
-                                        color: Colors.deepOrange,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          ingredient.name,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
+                                  child: MergeSemantics(
+                                    child: Row(
+                                      children: [
+                                        ExcludeSemantics(
+                                          child: Icon(
+                                            Icons.circle,
+                                            size: 8,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
                                           ),
                                         ),
-                                      ),
-                                      Text(
-                                        ingredient.measure,
-                                        style: TextStyle(
-                                          color: Colors.grey[700],
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            ingredient.name,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        Text(
+                                          ingredient.measure,
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               }).toList(),

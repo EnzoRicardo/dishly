@@ -97,15 +97,29 @@ class _MealsScreenState extends State<MealsScreen> {
             child: Builder(
               builder: (context) {
                 if (viewModel.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      semanticsLabel: 'Carregando pratos',
+                    ),
+                  );
                 }
 
                 if (viewModel.errorMessage != null) {
-                  return Center(child: Text(viewModel.errorMessage!));
+                  return Center(
+                    child: Semantics(
+                      liveRegion: true,
+                      child: Text(viewModel.errorMessage!),
+                    ),
+                  );
                 }
 
                 if (viewModel.displayedMeals.isEmpty) {
-                  return const Center(child: Text('Nenhum prato encontrado.'));
+                  return Center(
+                    child: Semantics(
+                      liveRegion: true,
+                      child: const Text('Nenhum prato encontrado.'),
+                    ),
+                  );
                 }
 
                 return MealsGrid(

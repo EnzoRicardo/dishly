@@ -84,6 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextField(
                           controller: _username,
                           decoration: InputDecoration(
+                            labelText: 'Usuário',
                             prefixIcon: Icon(
                               Icons.person,
                               color: Theme.of(context).colorScheme.primary,
@@ -106,10 +107,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0,
                                     ),
-                                    child: Text(
-                                      authViewModel.usernameErrorMessage!,
-                                      textAlign: TextAlign.start,
-                                      style: const TextStyle(color: Colors.red),
+                                    child: Semantics(
+                                      liveRegion: true,
+                                      child: Text(
+                                        authViewModel.usernameErrorMessage!,
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .error,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -119,6 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextField(
                           controller: _password,
                           decoration: InputDecoration(
+                            labelText: 'Senha',
                             prefixIcon: Icon(
                               Icons.lock,
                               color: Theme.of(context).colorScheme.primary,
@@ -142,12 +151,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0,
                                     ),
-                                    child: Text(
-                                      authViewModel.passwordErrorMessage!,
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .error,
+                                    child: Semantics(
+                                      liveRegion: true,
+                                      child: Text(
+                                        authViewModel.passwordErrorMessage!,
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .error,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -179,12 +191,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           },
                           child: authViewModel.isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 24,
                                   height: 24,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary,
+                                    semanticsLabel: 'Entrando',
                                   ),
                                 )
                               : const Text('Entrar'),
