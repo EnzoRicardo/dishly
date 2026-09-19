@@ -75,6 +75,7 @@ class DishlyApp extends StatelessWidget {
           scrolledUnderElevation: 0,
           surfaceTintColor: Colors.transparent,
           backgroundColor: colorScheme.surface,
+          foregroundColor: colorScheme.primary,
         ),
 
         inputDecorationTheme: InputDecorationTheme(

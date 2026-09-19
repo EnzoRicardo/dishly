@@ -23,17 +23,11 @@ class MealDetailScreen extends StatefulWidget {
       context,
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider(
-          create: (ctx) => MealDetailViewModel(
-            ctx.read<MealRepository>(),
-            {
-              CollectionType.favorites: ctx.read<FavoritesRepository>(),
-              CollectionType.cooked: ctx.read<CookedMealsRepository>(),
-            },
-          ),
-          child: MealDetailScreen(
-            mealId: meal.id,
-            mealName: meal.name,
-          ),
+          create: (ctx) => MealDetailViewModel(ctx.read<MealRepository>(), {
+            CollectionType.favorites: ctx.read<FavoritesRepository>(),
+            CollectionType.cooked: ctx.read<CookedMealsRepository>(),
+          }),
+          child: MealDetailScreen(mealId: meal.id, mealName: meal.name),
         ),
       ),
     );
@@ -58,18 +52,24 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.mealName),
+        title: Text(
+          widget.mealName,
+          style: TextStyle(
+            fontSize: 20,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: CollectionType.values.map((type) {
           final isSelected = viewModel.isInCollection(type);
           return IconButton(
             isSelected: isSelected,
-            icon: Icon(type.icon),
+            icon: Icon(type.icon, color: Theme.of(context).colorScheme.primary),
             selectedIcon: Icon(type.selectedIcon, color: type.activeColor),
             tooltip: isSelected ? type.activeTooltip : type.inactiveTooltip,
             onPressed: viewModel.meal != null
-                ? () => context
-                    .read<MealDetailViewModel>()
-                    .toggleCollection(type)
+                ? () =>
+                      context.read<MealDetailViewModel>().toggleCollection(type)
                 : null,
           );
         }).toList(),
@@ -118,17 +118,24 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // 1. Large Image Header
-                Image.network(
-                  meal.getImage(ImageSize.large),
-                  height: 260,
-                  fit: BoxFit.cover,
-                  semanticLabel: 'Foto do prato ${meal.name}',
-                  errorBuilder: (context, error, stackTrace) => const SizedBox(
-                    height: 200,
-                    child: Icon(
-                      Icons.broken_image,
-                      size: 64,
-                      semanticLabel: 'Imagem do prato indisponível',
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      meal.getImage(ImageSize.large),
+                      height: 260,
+                      fit: BoxFit.cover,
+                      semanticLabel: 'Foto do prato ${meal.name}',
+                      errorBuilder: (context, error, stackTrace) =>
+                          const SizedBox(
+                            height: 200,
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 64,
+                              semanticLabel: 'Imagem do prato indisponível',
+                            ),
+                          ),
                     ),
                   ),
                 ),
