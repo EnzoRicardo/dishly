@@ -15,25 +15,19 @@ class ImageSizeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<ImageSize>(
-      icon: const Icon(Icons.photo_size_select_actual_outlined),
+      icon: Icon(
+        Icons.photo_size_select_actual_outlined,
+        color: Theme.of(context).colorScheme.primary,
+        size: 20,
+      ),
       tooltip: 'Tamanho da Imagem',
       initialValue: selectedSize,
       onSelected: onSelected,
       itemBuilder: (context) => const [
-        PopupMenuItem(
-          value: ImageSize.small,
-          child: Text('Pequeno (150px)'),
-        ),
-        PopupMenuItem(
-          value: ImageSize.medium,
-          child: Text('Médio (350px)'),
-        ),
-        PopupMenuItem(
-          value: ImageSize.large,
-          child: Text('Grande (500px)'),
-        ),
+        PopupMenuItem(value: ImageSize.small, child: Text('Pequeno (150px)')),
+        PopupMenuItem(value: ImageSize.medium, child: Text('Médio (350px)')),
+        PopupMenuItem(value: ImageSize.large, child: Text('Grande (500px)')),
       ],
     );
   }
 }
-

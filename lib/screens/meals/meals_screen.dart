@@ -1,9 +1,10 @@
+import 'package:dishly/viewmodels/auth/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/meal.dart';
 import '../../viewmodels/meals/meals_view_model.dart';
 import '../../widgets/collection_nav_actions.dart';
-import '../../widgets/image_size_selector.dart';
 import '../../widgets/meals_grid.dart';
 import '../../widgets/meal_search_bar.dart';
 
@@ -29,15 +30,56 @@ class _MealsScreenState extends State<MealsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pratos da API'),
-        centerTitle: true,
+        title: Text(
+          'Dishly',
+          style: TextStyle(
+            fontSize: 20,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           const CollectionNavActions(),
-          ImageSizeSelector(
-            selectedSize: viewModel.selectedSize,
-            onSelected: (size) {
-              context.read<MealsViewModel>().setSelectedSize(size);
-            },
+          PopupMenuButton<void>(
+            tooltip: 'Mais opções',
+            iconColor: Theme.of(context).colorScheme.primary,
+            itemBuilder: (context) => [
+              CheckedPopupMenuItem<void>(
+                checked: viewModel.selectedSize == ImageSize.small,
+                onTap: () => context.read<MealsViewModel>().setSelectedSize(
+                  ImageSize.small,
+                ),
+                child: const Text('Pequeno (150px)'),
+              ),
+              CheckedPopupMenuItem<void>(
+                checked: viewModel.selectedSize == ImageSize.medium,
+                onTap: () => context.read<MealsViewModel>().setSelectedSize(
+                  ImageSize.medium,
+                ),
+                child: const Text('Médio (350px)'),
+              ),
+              CheckedPopupMenuItem<void>(
+                checked: viewModel.selectedSize == ImageSize.large,
+                onTap: () => context.read<MealsViewModel>().setSelectedSize(
+                  ImageSize.large,
+                ),
+                child: const Text('Grande (500px)'),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem<void>(
+                onTap: () => context.read<AuthViewModel>().logout(),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.logout,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    SizedBox(width: 12),
+                    Text('Sair'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -82,8 +124,8 @@ class _MealsScreenState extends State<MealsScreen> {
               onPressed: () {
                 context.read<MealsViewModel>().loadMore();
               },
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               icon: const Icon(Icons.add),
               label: Text(
                 'Carregar Mais (${viewModel.remainingCount} restantes)',

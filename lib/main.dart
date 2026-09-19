@@ -68,10 +68,14 @@ class DishlyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: colorScheme,
         useMaterial3: true,
-        scaffoldBackgroundColor: colorScheme.surface,
         fontFamily: 'Raleway',
 
-        appBarTheme: AppBarTheme(elevation: 0, centerTitle: false),
+        appBarTheme: AppBarTheme(
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+          backgroundColor: colorScheme.surface,
+        ),
 
         inputDecorationTheme: InputDecorationTheme(
           filled: false,

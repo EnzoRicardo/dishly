@@ -16,10 +16,7 @@ class CollectionNavActions extends StatelessWidget {
         MaterialPageRoute(builder: (_) => screen),
       );
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => screen),
-      );
+      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
     }
   }
 
@@ -30,13 +27,23 @@ class CollectionNavActions extends StatelessWidget {
       children: [
         if (currentType != CollectionType.cooked)
           IconButton(
-            icon: const Icon(Icons.restaurant_outlined),
+            icon: Icon(
+              Icons.restaurant_outlined,
+              color: Theme.of(context).colorScheme.primary,
+              size: 20,
+            ),
+            visualDensity: VisualDensity.compact,
             tooltip: 'Pratos Cozinhados',
             onPressed: () => _navigate(context, const CookedMealsScreen()),
           ),
         if (currentType != CollectionType.favorites)
           IconButton(
-            icon: const Icon(Icons.favorite_outline),
+            icon: Icon(
+              Icons.favorite_outline,
+              color: Theme.of(context).colorScheme.primary,
+              size: 20,
+            ),
+            visualDensity: VisualDensity.compact,
             tooltip: 'Meus Favoritos',
             onPressed: () => _navigate(context, const FavoritesScreen()),
           ),
@@ -44,4 +51,3 @@ class CollectionNavActions extends StatelessWidget {
     );
   }
 }
-
