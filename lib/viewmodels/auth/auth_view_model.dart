@@ -5,6 +5,7 @@ class AuthViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
 
   String? _currentUser;
+  bool _isCheckingSession = true;
   bool _isLoading = false;
   String? _usernameErrorMessage;
   String? _passwordErrorMessage;
@@ -13,6 +14,7 @@ class AuthViewModel extends ChangeNotifier {
   AuthViewModel(this._authRepository);
 
   String? get currentUser => _currentUser;
+  bool get isCheckingSession => _isCheckingSession;
   bool get isLoading => _isLoading;
   String? get usernameErrorMessage => _usernameErrorMessage;
   String? get passwordErrorMessage => _passwordErrorMessage;
@@ -64,7 +66,13 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<void> loadCurrentUser() async {
-    _currentUser = await _authRepository.getUser();
-    notifyListeners();
+    try {
+      _currentUser = await _authRepository.getUser();
+    } catch (e) {
+      _errorMessage = 'Falha ao recuperar a sessão: $e';
+    } finally {
+      _isCheckingSession = false;
+      notifyListeners();
+    }
   }
 }

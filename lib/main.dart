@@ -1,4 +1,3 @@
-import 'package:dishly/screens/auth/login_screen.dart';
 import 'package:dishly/viewmodels/auth/auth_view_model.dart';
 
 import 'repositories/auth/auth_repository.dart';
@@ -13,7 +12,7 @@ import 'repositories/collections/favorites_repository.dart';
 import 'repositories/collections/favorites_repository_impl.dart';
 import 'repositories/meals/meal_repository.dart';
 import 'repositories/meals/meal_repository_impl.dart';
-import 'screens/meals/meals_screen.dart';
+import 'screens/auth/auth_gate.dart';
 import 'viewmodels/collections/cooked_meals_view_model.dart';
 import 'viewmodels/collections/favorites_view_model.dart';
 import 'viewmodels/meals/meals_view_model.dart';
@@ -30,7 +29,8 @@ void main() {
         ),
 
         ChangeNotifierProvider<AuthViewModel>(
-          create: (context) => AuthViewModel(context.read<AuthRepository>()),
+          create: (context) =>
+              AuthViewModel(context.read<AuthRepository>())..loadCurrentUser(),
         ),
         ChangeNotifierProvider<MealsViewModel>(
           create: (context) => MealsViewModel(context.read<MealRepository>()),
@@ -71,6 +71,8 @@ class DishlyApp extends StatelessWidget {
         scaffoldBackgroundColor: colorScheme.surface,
         fontFamily: 'Raleway',
 
+        appBarTheme: AppBarTheme(elevation: 0, centerTitle: false),
+
         inputDecorationTheme: InputDecorationTheme(
           filled: false,
           floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -107,7 +109,7 @@ class DishlyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MealsScreen(),
+      home: const AuthGate(),
     );
   }
 }
