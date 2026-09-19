@@ -53,6 +53,8 @@ class MealCollectionViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool contains(String id) => _meals.any((meal) => meal.id == id);
+
   Future<void> remove(Meal meal) async {
     await repository.toggle(meal);
     _meals.removeWhere((item) => item.id == meal.id);

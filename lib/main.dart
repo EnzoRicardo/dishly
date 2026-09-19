@@ -37,7 +37,8 @@ void main() {
         ),
         ChangeNotifierProvider<FavoritesViewModel>(
           create: (context) =>
-              FavoritesViewModel(context.read<FavoritesRepository>()),
+              FavoritesViewModel(context.read<FavoritesRepository>())
+                ..loadMeals(),
         ),
         ChangeNotifierProvider<CookedMealsViewModel>(
           create: (context) =>

@@ -40,46 +40,14 @@ class _MealsScreenState extends State<MealsScreen> {
         ),
         actions: [
           const CollectionNavActions(),
-          PopupMenuButton<void>(
-            tooltip: 'Mais opções',
-            iconColor: Theme.of(context).colorScheme.primary,
-            itemBuilder: (context) => [
-              CheckedPopupMenuItem<void>(
-                checked: viewModel.selectedSize == ImageSize.small,
-                onTap: () => context.read<MealsViewModel>().setSelectedSize(
-                  ImageSize.small,
-                ),
-                child: const Text('Pequeno (150px)'),
-              ),
-              CheckedPopupMenuItem<void>(
-                checked: viewModel.selectedSize == ImageSize.medium,
-                onTap: () => context.read<MealsViewModel>().setSelectedSize(
-                  ImageSize.medium,
-                ),
-                child: const Text('Médio (240px)'),
-              ),
-              CheckedPopupMenuItem<void>(
-                checked: viewModel.selectedSize == ImageSize.large,
-                onTap: () => context.read<MealsViewModel>().setSelectedSize(
-                  ImageSize.large,
-                ),
-                child: const Text('Grande (500px)'),
-              ),
-              const PopupMenuDivider(),
-              PopupMenuItem<void>(
-                onTap: () => context.read<AuthViewModel>().logout(),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.logout,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    SizedBox(width: 12),
-                    Text('Sair'),
-                  ],
-                ),
-              ),
-            ],
+          IconButton(
+            icon: Icon(
+              Icons.logout,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            onPressed: () {
+              context.read<AuthViewModel>().logout();
+            },
           ),
         ],
       ),

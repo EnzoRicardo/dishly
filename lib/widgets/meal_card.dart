@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../models/collection_type.dart';
 import '../models/meal.dart';
 
 class MealCard extends StatelessWidget {
   final Meal meal;
   final ImageSize size;
+  final bool isFavorite;
 
-  const MealCard({super.key, required this.meal, required this.size});
+  const MealCard({
+    super.key,
+    required this.meal,
+    required this.size,
+    this.isFavorite = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +60,16 @@ class MealCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Icon(Icons.favorite_border, size: 20),
+                Icon(
+                  isFavorite
+                      ? CollectionType.favorites.selectedIcon
+                      : CollectionType.favorites.icon,
+                  size: 20,
+                  color: isFavorite
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                  semanticLabel: isFavorite ? 'Favorito' : null,
+                ),
               ],
             ),
           ],

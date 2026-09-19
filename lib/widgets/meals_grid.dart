@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/meal.dart';
 import '../screens/meals/meal_detail_screen.dart';
+import '../viewmodels/collections/favorites_view_model.dart';
 import 'meal_card.dart';
 
 class MealsGrid extends StatelessWidget {
@@ -20,6 +22,8 @@ class MealsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final favorites = context.watch<FavoritesViewModel>();
+
     return GridView.builder(
       padding: padding,
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -36,14 +40,21 @@ class MealsGrid extends StatelessWidget {
           child: InkWell(
             mouseCursor: SystemMouseCursors.click,
             borderRadius: BorderRadius.circular(12),
-            onTap: () {
+            onTap: () async {
               if (onMealTap != null) {
-                onMealTap!(meal);
+                await onMealTap!(meal);
               } else {
-                MealDetailScreen.navigate(context, meal);
+                await MealDetailScreen.navigate(context, meal);
+              }
+              if (context.mounted) {
+                await context.read<FavoritesViewModel>().loadMeals();
               }
             },
-            child: MealCard(meal: meal, size: size),
+            child: MealCard(
+              meal: meal,
+              size: size,
+              isFavorite: favorites.contains(meal.id),
+            ),
           ),
         );
       },
