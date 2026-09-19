@@ -1,3 +1,9 @@
+import 'package:dishly/screens/auth/login_screen.dart';
+import 'package:dishly/viewmodels/auth/auth_view_model.dart';
+
+import 'repositories/auth/auth_repository.dart';
+import 'repositories/auth/auth_repository_impl.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,10 +22,16 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        Provider<AuthRepository>(create: (_) => AuthRepositoryImpl()),
         Provider<MealRepository>(create: (_) => MealRepositoryImpl()),
         Provider<FavoritesRepository>(create: (_) => FavoritesRepositoryImpl()),
         Provider<CookedMealsRepository>(
-            create: (_) => CookedMealsRepositoryImpl()),
+          create: (_) => CookedMealsRepositoryImpl(),
+        ),
+
+        ChangeNotifierProvider<AuthViewModel>(
+          create: (context) => AuthViewModel(context.read<AuthRepository>()),
+        ),
         ChangeNotifierProvider<MealsViewModel>(
           create: (context) => MealsViewModel(context.read<MealRepository>()),
         ),
