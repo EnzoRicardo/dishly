@@ -56,7 +56,7 @@ class _MealsScreenState extends State<MealsScreen> {
                 onTap: () => context.read<MealsViewModel>().setSelectedSize(
                   ImageSize.medium,
                 ),
-                child: const Text('Médio (350px)'),
+                child: const Text('Médio (240px)'),
               ),
               CheckedPopupMenuItem<void>(
                 checked: viewModel.selectedSize == ImageSize.large,

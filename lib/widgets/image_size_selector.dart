@@ -25,7 +25,7 @@ class ImageSizeSelector extends StatelessWidget {
       onSelected: onSelected,
       itemBuilder: (context) => const [
         PopupMenuItem(value: ImageSize.small, child: Text('Pequeno (150px)')),
-        PopupMenuItem(value: ImageSize.medium, child: Text('Médio (350px)')),
+        PopupMenuItem(value: ImageSize.medium, child: Text('Médio (240px)')),
         PopupMenuItem(value: ImageSize.large, child: Text('Grande (500px)')),
       ],
     );

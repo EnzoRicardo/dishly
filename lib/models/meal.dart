@@ -81,7 +81,7 @@ typedef MealIngredient = ({String name, String measure});
 
 enum ImageSize {
   small(150),
-  medium(350),
+  medium(240),
   large(500);
 
   final double maxExtent;
