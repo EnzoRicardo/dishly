@@ -9,7 +9,8 @@ import '../../widgets/meals_grid.dart';
 import '../../widgets/meal_search_bar.dart';
 import '../meals/meal_detail_screen.dart';
 
-class MealCollectionScreen<T extends MealCollectionViewModel> extends StatefulWidget {
+class MealCollectionScreen<T extends MealCollectionViewModel>
+    extends StatefulWidget {
   final String title;
   final String searchHint;
   final IconData emptyIcon;
@@ -26,7 +27,8 @@ class MealCollectionScreen<T extends MealCollectionViewModel> extends StatefulWi
   });
 
   @override
-  State<MealCollectionScreen<T>> createState() => _MealCollectionScreenState<T>();
+  State<MealCollectionScreen<T>> createState() =>
+      _MealCollectionScreenState<T>();
 }
 
 class _MealCollectionScreenState<T extends MealCollectionViewModel>
@@ -45,17 +47,15 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-        actions: [
-          CollectionNavActions(currentType: widget.collectionType),
-          ImageSizeSelector(
-            selectedSize: viewModel.selectedSize,
-            onSelected: (size) {
-              context.read<T>().setSelectedSize(size);
-            },
+        title: Text(
+          widget.title,
+          style: TextStyle(
+            fontSize: 20,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
           ),
-        ],
+        ),
+        actions: [CollectionNavActions(currentType: widget.collectionType)],
       ),
       body: Builder(
         builder: (context) {
@@ -106,6 +106,12 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
                   context.read<T>().setSearchQuery('');
                 },
               ),
+              ImageSizeSelector(
+                selectedSize: viewModel.selectedSize,
+                onSelected: (size) {
+                  context.read<T>().setSelectedSize(size);
+                },
+              ),
               Expanded(
                 child: viewModel.displayedMeals.isEmpty
                     ? Center(
@@ -140,4 +146,3 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
     );
   }
 }
-

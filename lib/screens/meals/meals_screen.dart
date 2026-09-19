@@ -2,9 +2,9 @@ import 'package:dishly/viewmodels/auth/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/meal.dart';
 import '../../viewmodels/meals/meals_view_model.dart';
 import '../../widgets/collection_nav_actions.dart';
+import '../../widgets/image_size_selector.dart';
 import '../../widgets/meals_grid.dart';
 import '../../widgets/meal_search_bar.dart';
 
@@ -59,6 +59,12 @@ class _MealsScreenState extends State<MealsScreen> {
             },
             onClear: () {
               context.read<MealsViewModel>().fetchMeals();
+            },
+          ),
+          ImageSizeSelector(
+            selectedSize: viewModel.selectedSize,
+            onSelected: (size) {
+              context.read<MealsViewModel>().setSelectedSize(size);
             },
           ),
           Expanded(

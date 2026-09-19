@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models/meal.dart';
 
+/// Controla a densidade da grade e, junto com ela, a resolução do thumbnail
+/// que cada card baixa — ver [Meal.getImage].
 class ImageSizeSelector extends StatelessWidget {
   final ImageSize selectedSize;
   final ValueChanged<ImageSize> onSelected;
@@ -12,22 +14,48 @@ class ImageSizeSelector extends StatelessWidget {
     required this.onSelected,
   });
 
+  /// Escada de densidade: quanto maior o card, menos células o ícone mostra.
+  static const Map<ImageSize, IconData> _icons = {
+    ImageSize.small: Icons.view_module,
+    ImageSize.medium: Icons.grid_view,
+    ImageSize.large: Icons.view_agenda,
+  };
+
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<ImageSize>(
-      icon: Icon(
-        Icons.photo_size_select_actual_outlined,
-        color: Theme.of(context).colorScheme.primary,
-        size: 20,
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: SegmentedButton<ImageSize>(
+          segments: [
+            for (final size in ImageSize.values)
+              ButtonSegment(
+                value: size,
+                icon: Icon(_icons[size]),
+                tooltip: size.label,
+              ),
+          ],
+          selected: {selectedSize},
+          onSelectionChanged: (selection) => onSelected(selection.first),
+          showSelectedIcon: false,
+          style: SegmentedButton.styleFrom(
+            // Sem contorno: `side` desenha a moldura externa e as divisórias
+            // entre segmentos, então zerar os dois deixa só o track sólido.
+            side: BorderSide.none,
+            backgroundColor: colorScheme.surfaceContainerHighest,
+            foregroundColor: colorScheme.onSurfaceVariant,
+            selectedBackgroundColor: colorScheme.primary,
+            selectedForegroundColor: colorScheme.onPrimary,
+            iconSize: 22,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            visualDensity: VisualDensity.compact,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ),
       ),
-      tooltip: 'Tamanho da Imagem',
-      initialValue: selectedSize,
-      onSelected: onSelected,
-      itemBuilder: (context) => const [
-        PopupMenuItem(value: ImageSize.small, child: Text('Pequeno (150px)')),
-        PopupMenuItem(value: ImageSize.medium, child: Text('Médio (240px)')),
-        PopupMenuItem(value: ImageSize.large, child: Text('Grande (500px)')),
-      ],
     );
   }
 }

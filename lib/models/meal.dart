@@ -35,7 +35,7 @@ class Meal {
         ));
       }
     }
-    
+
     return Meal(
       id: json['idMeal'] ?? '',
       name: json['strMeal'] ?? '',
@@ -80,12 +80,17 @@ class Meal {
 typedef MealIngredient = ({String name, String measure});
 
 enum ImageSize {
-  small(150),
-  medium(240),
-  large(500);
+  small(label: 'Pequeno', maxExtent: 150),
+  medium(label: 'Médio', maxExtent: 240),
+  large(label: 'Grande', maxExtent: 500);
 
+  /// Largura máxima da coluna na grade — não é a resolução da imagem.
+  /// A resolução vem do sufixo [name] na URL: `small` serve 150px,
+  /// `medium` 350px e `large` 500px.
   final double maxExtent;
-  const ImageSize(this.maxExtent);
+  final String label;
 
-  static const ImageSize defaultSize = ImageSize.small;
+  const ImageSize({required this.label, required this.maxExtent});
+
+  static const ImageSize defaultSize = ImageSize.medium;
 }
