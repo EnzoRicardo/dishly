@@ -6,6 +6,8 @@ import 'repositories/auth/auth_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'constants/app_constants.dart';
+
 import 'repositories/collections/cooked_meals_repository.dart';
 import 'repositories/collections/cooked_meals_repository_impl.dart';
 import 'repositories/collections/favorites_repository.dart';
@@ -37,28 +39,29 @@ void main() {
         ),
         ChangeNotifierProvider<FavoritesViewModel>(
           create: (context) =>
-              FavoritesViewModel(context.read<FavoritesRepository>())
-                ..loadMeals(),
+              FavoritesViewModel(context.read<FavoritesRepository>()),
         ),
         ChangeNotifierProvider<CookedMealsViewModel>(
           create: (context) =>
               CookedMealsViewModel(context.read<CookedMealsRepository>()),
         ),
       ],
-      child: DishlyApp(),
+      child: const DishlyApp(),
     ),
   );
 }
 
 class DishlyApp extends StatelessWidget {
-  DishlyApp({super.key});
+  const DishlyApp({super.key});
 
-  final colorScheme = ColorScheme.fromSeed(seedColor: Colors.deepOrange);
+  static final _colorScheme =
+      ColorScheme.fromSeed(seedColor: Colors.deepOrange);
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = _colorScheme;
     return MaterialApp(
-      title: 'Dishly',
+      title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       builder: (context, child) => GestureDetector(
         behavior: HitTestBehavior.translucent,
@@ -67,7 +70,7 @@ class DishlyApp extends StatelessWidget {
         child: child,
       ),
       theme: ThemeData(
-        colorScheme: colorScheme,
+        colorScheme: _colorScheme,
         useMaterial3: true,
         fontFamily: 'Raleway',
 

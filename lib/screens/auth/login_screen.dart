@@ -1,6 +1,8 @@
-import 'package:dishly/viewmodels/auth/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../constants/app_constants.dart';
+import '../../viewmodels/auth/auth_view_model.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +20,43 @@ class _LoginScreenState extends State<LoginScreen> {
     _username.dispose();
     _password.dispose();
     super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final authViewModel = context.read<AuthViewModel>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    await authViewModel.login(
+      _username.text,
+      _password.text,
+    );
+
+    if (!mounted) return;
+    if (authViewModel.errorMessage != null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(authViewModel.errorMessage!),
+        ),
+      );
+    }
+  }
+
+  Widget _buildFieldError(BuildContext context, String message) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8.0,
+        vertical: 4.0,
+      ),
+      child: Semantics(
+        liveRegion: true,
+        child: Text(
+          message,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.error,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -42,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Dishly',
+                    AppConstants.appName,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -51,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Seu cardápio digital',
+                    AppConstants.appTagline,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -83,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         TextField(
                           controller: _username,
+                          textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: 'Usuário',
                             prefixIcon: Icon(
@@ -91,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               size: 16,
                             ),
                             hintText: 'Digite seu usuário',
-                            hintStyle: TextStyle(fontSize: 12),
+                            hintStyle: const TextStyle(fontSize: 12),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -100,32 +140,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        authViewModel.usernameErrorMessage != null
-                            ? Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0,
-                                    ),
-                                    child: Semantics(
-                                      liveRegion: true,
-                                      child: Text(
-                                        authViewModel.usernameErrorMessage!,
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .error,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : const SizedBox.shrink(),
+                        if (authViewModel.usernameErrorMessage != null)
+                          _buildFieldError(
+                            context,
+                            authViewModel.usernameErrorMessage!,
+                          ),
                         const SizedBox(height: 16),
                         TextField(
                           controller: _password,
+                          textInputAction: TextInputAction.done,
                           decoration: InputDecoration(
                             labelText: 'Senha',
                             prefixIcon: Icon(
@@ -134,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               size: 16,
                             ),
                             hintText: 'Digite sua senha',
-                            hintStyle: TextStyle(fontSize: 12),
+                            hintStyle: const TextStyle(fontSize: 12),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -143,53 +166,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           obscureText: true,
+                          onSubmitted: (_) => _submit(),
                         ),
-                        authViewModel.passwordErrorMessage != null
-                            ? Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0,
-                                    ),
-                                    child: Semantics(
-                                      liveRegion: true,
-                                      child: Text(
-                                        authViewModel.passwordErrorMessage!,
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .error,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : const SizedBox.shrink(),
+                        if (authViewModel.passwordErrorMessage != null)
+                          _buildFieldError(
+                            context,
+                            authViewModel.passwordErrorMessage!,
+                          ),
                         const SizedBox(height: 24),
                         FilledButton(
-                          style: ElevatedButton.styleFrom(
+                          style: FilledButton.styleFrom(
                             minimumSize: const Size.fromHeight(52),
-                            elevation: 1,
                           ),
-                          onPressed: () async {
-                            final authViewModel = context.read<AuthViewModel>();
-                            final messenger = ScaffoldMessenger.of(context);
-
-                            await authViewModel.login(
-                              _username.text,
-                              _password.text,
-                            );
-
-                            if (!mounted) return;
-                            if (authViewModel.errorMessage != null) {
-                              messenger.showSnackBar(
-                                SnackBar(
-                                  content: Text(authViewModel.errorMessage!),
-                                ),
-                              );
-                            }
-                          },
+                          onPressed: () => _submit(),
                           child: authViewModel.isLoading
                               ? SizedBox(
                                   width: 24,
