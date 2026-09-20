@@ -3,9 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../../models/collection_type.dart';
 import '../../models/meal.dart';
-import '../../repositories/collections/cooked_meals_repository.dart';
-import '../../repositories/collections/favorites_repository.dart';
 import '../../repositories/meals/meal_repository.dart';
+import '../../viewmodels/collections/cooked_meals_view_model.dart';
+import '../../viewmodels/collections/favorites_view_model.dart';
+import '../../viewmodels/collections/meal_collection_view_model.dart';
 import '../../viewmodels/meals/meal_detail_view_model.dart';
 
 class MealDetailScreen extends StatefulWidget {
@@ -23,10 +24,7 @@ class MealDetailScreen extends StatefulWidget {
       context,
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider(
-          create: (ctx) => MealDetailViewModel(ctx.read<MealRepository>(), {
-            CollectionType.favorites: ctx.read<FavoritesRepository>(),
-            CollectionType.cooked: ctx.read<CookedMealsRepository>(),
-          }),
+          create: (ctx) => MealDetailViewModel(ctx.read<MealRepository>()),
           child: MealDetailScreen(mealId: meal.id, mealName: meal.name),
         ),
       ),
@@ -38,6 +36,19 @@ class MealDetailScreen extends StatefulWidget {
 }
 
 class _MealDetailScreenState extends State<MealDetailScreen> {
+  MealCollectionViewModel _collectionVm(
+    BuildContext context,
+    CollectionType type, {
+    bool listen = false,
+  }) {
+    return switch (type) {
+      CollectionType.favorites =>
+        listen ? context.watch<FavoritesViewModel>() : context.read<FavoritesViewModel>(),
+      CollectionType.cooked =>
+        listen ? context.watch<CookedMealsViewModel>() : context.read<CookedMealsViewModel>(),
+    };
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,15 +72,16 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
           ),
         ),
         actions: CollectionType.values.map((type) {
-          final isSelected = viewModel.isInCollection(type);
+          final collection = _collectionVm(context, type, listen: true);
+          final isSelected = collection.contains(widget.mealId);
+
           return IconButton(
             isSelected: isSelected,
             icon: Icon(type.icon, color: Theme.of(context).colorScheme.primary),
             selectedIcon: Icon(type.selectedIcon, color: type.activeColor),
             tooltip: isSelected ? type.activeTooltip : type.inactiveTooltip,
             onPressed: viewModel.meal != null
-                ? () =>
-                      context.read<MealDetailViewModel>().toggleCollection(type)
+                ? () => _collectionVm(context, type).toggle(viewModel.meal!)
                 : null,
           );
         }).toList(),

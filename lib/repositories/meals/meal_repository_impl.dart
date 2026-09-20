@@ -11,106 +11,41 @@ class MealRepositoryImpl implements MealRepository {
 
   MealRepositoryImpl({http.Client? client}) : _client = client ?? http.Client();
 
+  Future<dynamic> _fetchMealsPayload(Uri url, String errorMessage) async {
+    final response = await _client.get(url);
+    if (response.statusCode == 200) {
+      final responseJson = jsonDecode(response.body);
+      return responseJson['meals'];
+    }
+    throw Exception(errorMessage);
+  }
+
   @override
   Future<List<Meal>> searchMeals([String query = '']) async {
     final url = Uri.parse(
       '$baseUrl/search.php?s=${Uri.encodeQueryComponent(query.trim())}',
     );
-    final response = await _client.get(url);
-
-    if (response.statusCode == 200) {
-      final responseJson = jsonDecode(response.body);
-      final mealsJson = responseJson['meals'];
-
-      if (mealsJson == null) {
-        return [];
-      }
-
-      return (mealsJson as List)
-          .map((mealJson) => Meal.fromJson(mealJson))
-          .toList();
+    final mealsJson = await _fetchMealsPayload(url, 'Erro ao buscar pratos');
+    if (mealsJson == null) {
+      return [];
     }
 
-    throw Exception('Erro ao buscar pratos');
+    return (mealsJson as List)
+        .map((mealJson) => Meal.fromJson(mealJson))
+        .toList();
   }
 
   @override
   Future<Meal?> getMealById(String id) async {
     final url = Uri.parse('$baseUrl/lookup.php?i=$id');
-    final response = await _client.get(url);
+    final mealsJson =
+        await _fetchMealsPayload(url, 'Erro ao buscar detalhes do prato');
 
-    if (response.statusCode == 200) {
-      final responseJson = jsonDecode(response.body);
-      final mealsJson = responseJson['meals'];
-
-      if (mealsJson == null || mealsJson.isEmpty) {
-        return null;
-      }
-
-      return Meal.fromJson(mealsJson[0]);
+    if (mealsJson == null || (mealsJson as List).isEmpty) {
+      return null;
     }
 
-    throw Exception('Erro ao buscar detalhes do prato');
-  }
-
-  @override
-  Future<Meal?> getRandomMeal() async {
-    final url = Uri.parse('$baseUrl/random.php');
-    final response = await _client.get(url);
-
-    if (response.statusCode == 200) {
-      final responseJson = jsonDecode(response.body);
-      final mealsJson = responseJson['meals'];
-
-      if (mealsJson == null || mealsJson.isEmpty) {
-        return null;
-      }
-
-      return Meal.fromJson(mealsJson[0]);
-    }
-
-    throw Exception('Erro ao buscar prato aleatório');
-  }
-
-  @override
-  Future<List<String>> getCategories() async {
-    final url = Uri.parse('$baseUrl/list.php?c=list');
-    final response = await _client.get(url);
-
-    if (response.statusCode == 200) {
-      final responseJson = jsonDecode(response.body);
-      final categoriesJson = responseJson['meals'];
-
-      if (categoriesJson == null) {
-        return [];
-      }
-
-      return (categoriesJson as List)
-          .map((categoryJson) => categoryJson['strCategory'] as String)
-          .toList();
-    }
-
-    throw Exception('Erro ao buscar categorias de pratos');
-  }
-
-  @override
-  Future<List<Meal>> getMealsByCategory(String category) async {
-    final url = Uri.parse('$baseUrl/filter.php?c=$category');
-    final response = await _client.get(url);
-
-    if (response.statusCode == 200) {
-      final responseJson = jsonDecode(response.body);
-      final mealsJson = responseJson['meals'];
-
-      if (mealsJson == null) {
-        return [];
-      }
-
-      return (mealsJson as List)
-          .map((mealJson) => Meal.fromJson(mealJson))
-          .toList();
-    }
-
-    throw Exception('Erro ao buscar pratos por categoria');
+    return Meal.fromJson(mealsJson[0]);
   }
 }
+

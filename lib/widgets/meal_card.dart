@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../models/collection_type.dart';
 import '../models/meal.dart';
 
 class MealCard extends StatelessWidget {
   final Meal meal;
   final ImageSize size;
-  final bool isFavorite;
+  final List<Widget> indicators;
 
   const MealCard({
     super.key,
     required this.meal,
     required this.size,
-    this.isFavorite = false,
+    this.indicators = const [],
   });
 
   @override
@@ -31,12 +30,39 @@ class MealCard extends StatelessWidget {
             Expanded(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  meal.getImage(size),
-                  width: double.infinity,
-                  excludeFromSemantics: true,
-                  fit: BoxFit.cover,
-                ),
+                child: meal.image.trim().isEmpty
+                    ? const Center(child: Icon(Icons.broken_image))
+                    : Image.network(
+                        meal.getImage(size),
+                        width: double.infinity,
+                        excludeFromSemantics: true,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest
+                                .withValues(alpha: 0.3),
+                            child: Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(child: Icon(Icons.broken_image)),
+                      ),
               ),
             ),
             const SizedBox(height: 8),
@@ -60,16 +86,11 @@ class MealCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(
-                  isFavorite
-                      ? CollectionType.favorites.selectedIcon
-                      : CollectionType.favorites.icon,
-                  size: 20,
-                  color: isFavorite
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                  semanticLabel: isFavorite ? 'Favorito' : null,
-                ),
+                for (final indicator in indicators)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: indicator,
+                  ),
               ],
             ),
           ],

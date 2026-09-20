@@ -20,7 +20,18 @@ class _MealSearchBarState extends State<MealSearchBar> {
   final TextEditingController _controller = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    setState(() {});
+  }
+
+  @override
   void dispose() {
+    _controller.removeListener(_onTextChanged);
     _controller.dispose();
     super.dispose();
   }
@@ -28,6 +39,12 @@ class _MealSearchBarState extends State<MealSearchBar> {
   void _clear() {
     _controller.clear();
     widget.onClear();
+  }
+
+  void _submit(String value) {
+    final trimmedValue = value.trim();
+    _controller.text = trimmedValue;
+    widget.onSubmitted(trimmedValue);
   }
 
   @override
@@ -39,19 +56,35 @@ class _MealSearchBarState extends State<MealSearchBar> {
         decoration: InputDecoration(
           labelText: widget.hintText,
           prefixIcon: const Icon(Icons.search),
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.clear),
-            tooltip: 'Limpar busca',
-            onPressed: _clear,
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_controller.text.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.clear),
+                  tooltip: 'Limpar busca',
+                  onPressed: _clear,
+                ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: FilledButton.tonal(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 36),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () => _submit(_controller.text),
+                  child: const Text('Buscar'),
+                ),
+              ),
+            ],
           ),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         ),
-        onSubmitted: (value) {
-          final trimmedValue = value.trim();
-          _controller.text = trimmedValue;
-          widget.onSubmitted(trimmedValue);
-        }
+        onSubmitted: _submit,
       ),
     );
   }

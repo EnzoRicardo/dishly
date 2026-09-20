@@ -14,13 +14,6 @@ class ImageSizeSelector extends StatelessWidget {
     required this.onSelected,
   });
 
-  /// Escada de densidade: quanto maior o card, menos células o ícone mostra.
-  static const Map<ImageSize, IconData> _icons = {
-    ImageSize.small: Icons.view_module,
-    ImageSize.medium: Icons.grid_view,
-    ImageSize.large: Icons.view_agenda,
-  };
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -34,7 +27,7 @@ class ImageSizeSelector extends StatelessWidget {
             for (final size in ImageSize.values)
               ButtonSegment(
                 value: size,
-                icon: Icon(_icons[size]),
+                icon: Icon(size.icon),
                 tooltip: size.label,
               ),
           ],
@@ -51,8 +44,6 @@ class ImageSizeSelector extends StatelessWidget {
             selectedForegroundColor: colorScheme.onPrimary,
             iconSize: 22,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            visualDensity: VisualDensity.compact,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         ),
       ),
