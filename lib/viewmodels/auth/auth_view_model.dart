@@ -49,8 +49,12 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _authRepository.saveUser(user);
-      _currentUser = user;
+      final success = await _authRepository.authenticate(user, password);
+      if (success) {
+        _currentUser = user;
+      } else {
+        _errorMessage = 'Senha incorreta para o usuário informado.';
+      }
     } catch (e) {
       _errorMessage = 'Falha ao fazer login: $e';
     } finally {
@@ -62,6 +66,9 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> logout() async {
     await _authRepository.clearUser();
     _currentUser = null;
+    _errorMessage = null;
+    _usernameErrorMessage = null;
+    _passwordErrorMessage = null;
     notifyListeners();
   }
 
