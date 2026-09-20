@@ -9,6 +9,11 @@ class CollectionNavActions extends StatelessWidget {
 
   const CollectionNavActions({super.key, this.currentType});
 
+  Widget _screenFor(CollectionType type) => switch (type) {
+        CollectionType.cooked => const CookedMealsScreen(),
+        CollectionType.favorites => const FavoritesScreen(),
+      };
+
   void _navigate(BuildContext context, Widget screen) {
     if (currentType != null) {
       Navigator.pushReplacement(
@@ -16,10 +21,7 @@ class CollectionNavActions extends StatelessWidget {
         MaterialPageRoute(builder: (_) => screen),
       );
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => screen),
-      );
+      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
     }
   }
 
@@ -28,20 +30,18 @@ class CollectionNavActions extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (currentType != CollectionType.cooked)
-          IconButton(
-            icon: const Icon(Icons.restaurant_outlined),
-            tooltip: 'Pratos Cozinhados',
-            onPressed: () => _navigate(context, const CookedMealsScreen()),
-          ),
-        if (currentType != CollectionType.favorites)
-          IconButton(
-            icon: const Icon(Icons.favorite_outline),
-            tooltip: 'Meus Favoritos',
-            onPressed: () => _navigate(context, const FavoritesScreen()),
-          ),
+        for (final type in CollectionType.values)
+          if (type != currentType)
+            IconButton(
+              icon: Icon(
+                type.icon,
+                color: Theme.of(context).colorScheme.primary,
+                size: 20,
+              ),
+              tooltip: type.title,
+              onPressed: () => _navigate(context, _screenFor(type)),
+            ),
       ],
     );
   }
 }
-

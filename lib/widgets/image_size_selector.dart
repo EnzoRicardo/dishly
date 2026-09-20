@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models/meal.dart';
 
+/// Controla a densidade da grade e, junto com ela, a resolução do thumbnail
+/// que cada card baixa — ver [Meal.getImage].
 class ImageSizeSelector extends StatelessWidget {
   final ImageSize selectedSize;
   final ValueChanged<ImageSize> onSelected;
@@ -14,26 +16,37 @@ class ImageSizeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<ImageSize>(
-      icon: const Icon(Icons.photo_size_select_actual_outlined),
-      tooltip: 'Tamanho da Imagem',
-      initialValue: selectedSize,
-      onSelected: onSelected,
-      itemBuilder: (context) => const [
-        PopupMenuItem(
-          value: ImageSize.small,
-          child: Text('Pequeno (150px)'),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: SegmentedButton<ImageSize>(
+          segments: [
+            for (final size in ImageSize.values)
+              ButtonSegment(
+                value: size,
+                icon: Icon(size.icon),
+                tooltip: size.label,
+              ),
+          ],
+          selected: {selectedSize},
+          onSelectionChanged: (selection) => onSelected(selection.first),
+          showSelectedIcon: false,
+          style: SegmentedButton.styleFrom(
+            // Sem contorno: `side` desenha a moldura externa e as divisórias
+            // entre segmentos, então zerar os dois deixa só o track sólido.
+            side: BorderSide.none,
+            backgroundColor: colorScheme.surfaceContainerHighest,
+            foregroundColor: colorScheme.onSurfaceVariant,
+            selectedBackgroundColor: colorScheme.primary,
+            selectedForegroundColor: colorScheme.onPrimary,
+            iconSize: 22,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          ),
         ),
-        PopupMenuItem(
-          value: ImageSize.medium,
-          child: Text('Médio (350px)'),
-        ),
-        PopupMenuItem(
-          value: ImageSize.large,
-          child: Text('Grande (500px)'),
-        ),
-      ],
+      ),
     );
   }
 }
-

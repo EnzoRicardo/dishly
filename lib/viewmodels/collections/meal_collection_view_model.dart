@@ -4,14 +4,15 @@ import '../../models/meal.dart';
 import '../../repositories/collections/meal_collection_repository.dart';
 
 class MealCollectionViewModel extends ChangeNotifier {
-  final MealCollectionRepository repository;
+  final MealCollectionRepository _repository;
 
   List<Meal> _meals = [];
   bool _isLoading = false;
   ImageSize _selectedSize = ImageSize.defaultSize;
   String _searchQuery = '';
 
-  MealCollectionViewModel(this.repository);
+  MealCollectionViewModel(MealCollectionRepository repository)
+      : _repository = repository;
 
   List<Meal> get meals => _meals;
   bool get isLoading => _isLoading;
@@ -36,9 +37,12 @@ class MealCollectionViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _meals = await repository.getMeals();
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _meals = await _repository.getMeals();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   void setSelectedSize(ImageSize size) {
@@ -48,15 +52,29 @@ class MealCollectionViewModel extends ChangeNotifier {
     }
   }
 
-  void setSearchQuery(String query) {
+  List<Meal> setSearchQuery(String query) {
     _searchQuery = query.trim();
+    notifyListeners();
+    return displayedMeals;
+  }
+
+  bool contains(String id) => _meals.any((meal) => meal.id == id);
+
+  Future<void> toggle(Meal meal) async {
+    await _repository.toggle(meal);
+    if (contains(meal.id)) {
+      _meals.removeWhere((item) => item.id == meal.id);
+    } else {
+      _meals.add(meal);
+    }
     notifyListeners();
   }
 
-  Future<void> remove(Meal meal) async {
-    await repository.toggle(meal);
-    _meals.removeWhere((item) => item.id == meal.id);
+  void clear() {
+    _meals = [];
+    _searchQuery = '';
     notifyListeners();
   }
 }
+
 

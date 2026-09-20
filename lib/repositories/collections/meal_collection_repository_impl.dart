@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constants/storage_keys.dart';
 import '../../models/meal.dart';
 import 'meal_collection_repository.dart';
 
@@ -16,9 +17,14 @@ class MealCollectionRepositoryImpl implements MealCollectionRepository {
   Future<SharedPreferences> get _asyncPrefs async =>
       prefs ?? await SharedPreferences.getInstance();
 
+  String _userStorageKey(SharedPreferences preferences) {
+    final currentUser = preferences.getString(StorageKeys.currentUser);
+    return StorageKeys.userCollectionKey(currentUser, storageKey);
+  }
+
   Future<Map<String, dynamic>> _getCollectionMap([SharedPreferences? prefs]) async {
     final preferences = prefs ?? await _asyncPrefs;
-    final jsonString = preferences.getString(storageKey);
+    final jsonString = preferences.getString(_userStorageKey(preferences));
     if (jsonString == null || jsonString.isEmpty) {
       return {};
     }
@@ -54,6 +60,6 @@ class MealCollectionRepositoryImpl implements MealCollectionRepository {
       collectionById[meal.id] = meal.toJson();
     }
 
-    await prefs.setString(storageKey, jsonEncode(collectionById));
+    await prefs.setString(_userStorageKey(prefs), jsonEncode(collectionById));
   }
 }

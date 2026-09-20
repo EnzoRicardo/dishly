@@ -10,10 +10,6 @@ class FavoritesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MealCollectionScreen<FavoritesViewModel>(
-      title: 'Meus Favoritos',
-      searchHint: 'Buscar nos favoritos...',
-      emptyIcon: Icons.favorite_border,
-      emptyMessage: 'Nenhum prato favorito ainda.',
       collectionType: CollectionType.favorites,
     );
   }

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Meal {
   final String id;
   final String name;
@@ -35,7 +37,7 @@ class Meal {
         ));
       }
     }
-    
+
     return Meal(
       id: json['idMeal'] ?? '',
       name: json['strMeal'] ?? '',
@@ -80,12 +82,22 @@ class Meal {
 typedef MealIngredient = ({String name, String measure});
 
 enum ImageSize {
-  small(150),
-  medium(350),
-  large(500);
+  small(label: 'Pequeno', maxExtent: 150, icon: Icons.view_module),
+  medium(label: 'Médio', maxExtent: 240, icon: Icons.grid_view),
+  large(label: 'Grande', maxExtent: 500, icon: Icons.view_agenda);
 
+  /// Largura máxima da coluna na grade — não é a resolução da imagem.
+  /// A resolução vem do sufixo [name] na URL: `small` serve 150px,
+  /// `medium` 350px e `large` 500px.
   final double maxExtent;
-  const ImageSize(this.maxExtent);
+  final String label;
+  final IconData icon;
 
-  static const ImageSize defaultSize = ImageSize.small;
+  const ImageSize({
+    required this.label,
+    required this.maxExtent,
+    required this.icon,
+  });
+
+  static const ImageSize defaultSize = ImageSize.medium;
 }

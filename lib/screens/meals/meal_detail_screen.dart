@@ -3,9 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../../models/collection_type.dart';
 import '../../models/meal.dart';
-import '../../repositories/collections/cooked_meals_repository.dart';
-import '../../repositories/collections/favorites_repository.dart';
 import '../../repositories/meals/meal_repository.dart';
+import '../../viewmodels/collections/cooked_meals_view_model.dart';
+import '../../viewmodels/collections/favorites_view_model.dart';
+import '../../viewmodels/collections/meal_collection_view_model.dart';
 import '../../viewmodels/meals/meal_detail_view_model.dart';
 
 class MealDetailScreen extends StatefulWidget {
@@ -23,17 +24,8 @@ class MealDetailScreen extends StatefulWidget {
       context,
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider(
-          create: (ctx) => MealDetailViewModel(
-            ctx.read<MealRepository>(),
-            {
-              CollectionType.favorites: ctx.read<FavoritesRepository>(),
-              CollectionType.cooked: ctx.read<CookedMealsRepository>(),
-            },
-          ),
-          child: MealDetailScreen(
-            mealId: meal.id,
-            mealName: meal.name,
-          ),
+          create: (ctx) => MealDetailViewModel(ctx.read<MealRepository>()),
+          child: MealDetailScreen(mealId: meal.id, mealName: meal.name),
         ),
       ),
     );
@@ -44,6 +36,19 @@ class MealDetailScreen extends StatefulWidget {
 }
 
 class _MealDetailScreenState extends State<MealDetailScreen> {
+  MealCollectionViewModel _collectionVm(
+    BuildContext context,
+    CollectionType type, {
+    bool listen = false,
+  }) {
+    return switch (type) {
+      CollectionType.favorites =>
+        listen ? context.watch<FavoritesViewModel>() : context.read<FavoritesViewModel>(),
+      CollectionType.cooked =>
+        listen ? context.watch<CookedMealsViewModel>() : context.read<CookedMealsViewModel>(),
+    };
+  }
+
   @override
   void initState() {
     super.initState();
@@ -58,18 +63,25 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.mealName),
+        title: Text(
+          widget.mealName,
+          style: TextStyle(
+            fontSize: 20,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: CollectionType.values.map((type) {
-          final isSelected = viewModel.isInCollection(type);
+          final collection = _collectionVm(context, type, listen: true);
+          final isSelected = collection.contains(widget.mealId);
+
           return IconButton(
             isSelected: isSelected,
-            icon: Icon(type.icon),
+            icon: Icon(type.icon, color: Theme.of(context).colorScheme.primary),
             selectedIcon: Icon(type.selectedIcon, color: type.activeColor),
             tooltip: isSelected ? type.activeTooltip : type.inactiveTooltip,
             onPressed: viewModel.meal != null
-                ? () => context
-                    .read<MealDetailViewModel>()
-                    .toggleCollection(type)
+                ? () => _collectionVm(context, type).toggle(viewModel.meal!)
                 : null,
           );
         }).toList(),
@@ -77,7 +89,11 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
       body: Builder(
         builder: (context) {
           if (viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: 'Carregando prato',
+              ),
+            );
           }
 
           if (viewModel.errorMessage != null) {
@@ -85,7 +101,10 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(viewModel.errorMessage!),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(viewModel.errorMessage!),
+                  ),
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () => viewModel.loadMealById(widget.mealId),
@@ -98,7 +117,12 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
 
           final meal = viewModel.meal;
           if (meal == null) {
-            return const Center(child: Text('Prato não encontrado.'));
+            return Center(
+              child: Semantics(
+                liveRegion: true,
+                child: const Text('Prato não encontrado.'),
+              ),
+            );
           }
 
           return SingleChildScrollView(
@@ -106,13 +130,25 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // 1. Large Image Header
-                Image.network(
-                  meal.getImage(ImageSize.large),
-                  height: 260,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const SizedBox(
-                    height: 200,
-                    child: Icon(Icons.broken_image, size: 64),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      meal.getImage(ImageSize.large),
+                      height: 260,
+                      fit: BoxFit.cover,
+                      semanticLabel: 'Foto do prato ${meal.name}',
+                      errorBuilder: (context, error, stackTrace) =>
+                          const SizedBox(
+                            height: 200,
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 64,
+                              semanticLabel: 'Imagem do prato indisponível',
+                            ),
+                          ),
+                    ),
                   ),
                 ),
 
@@ -170,29 +206,37 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 4.0,
                                   ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.circle,
-                                        size: 8,
-                                        color: Colors.deepOrange,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          ingredient.name,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
+                                  child: MergeSemantics(
+                                    child: Row(
+                                      children: [
+                                        ExcludeSemantics(
+                                          child: Icon(
+                                            Icons.circle,
+                                            size: 8,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
                                           ),
                                         ),
-                                      ),
-                                      Text(
-                                        ingredient.measure,
-                                        style: TextStyle(
-                                          color: Colors.grey[700],
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            ingredient.name,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        Text(
+                                          ingredient.measure,
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               }).toList(),
