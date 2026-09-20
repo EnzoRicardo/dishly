@@ -11,19 +11,11 @@ import '../meals/meal_detail_screen.dart';
 
 class MealCollectionScreen<T extends MealCollectionViewModel>
     extends StatefulWidget {
-  final String title;
-  final String searchHint;
-  final IconData emptyIcon;
-  final String emptyMessage;
-  final CollectionType? collectionType;
+  final CollectionType collectionType;
 
   const MealCollectionScreen({
     super.key,
-    required this.title,
-    required this.searchHint,
-    required this.emptyIcon,
-    required this.emptyMessage,
-    this.collectionType,
+    required this.collectionType,
   });
 
   @override
@@ -41,21 +33,39 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
     });
   }
 
+  Future<void> _handleSearch(String query) async {
+    final vm = context.read<T>();
+    final messenger = ScaffoldMessenger.of(context);
+    final results = vm.setSearchQuery(query);
+    if (!mounted) return;
+    final trimmed = query.trim();
+    if (trimmed.isNotEmpty && results.length == 1) {
+      await MealDetailScreen.navigate(context, results.first);
+    } else if (trimmed.isNotEmpty && results.isEmpty) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Nenhum prato encontrado para "$query".'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<T>();
+    final type = widget.collectionType;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.title,
+          type.title,
           style: TextStyle(
             fontSize: 20,
             color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: [CollectionNavActions(currentType: widget.collectionType)],
+        actions: [CollectionNavActions(currentType: type)],
       ),
       body: Builder(
         builder: (context) {
@@ -74,7 +84,7 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
                 children: [
                   ExcludeSemantics(
                     child: Icon(
-                      widget.emptyIcon,
+                      type.icon,
                       size: 64,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -83,7 +93,7 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
                   Semantics(
                     liveRegion: true,
                     child: Text(
-                      widget.emptyMessage,
+                      type.emptyMessage,
                       style: TextStyle(
                         fontSize: 16,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -98,19 +108,13 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
           return Column(
             children: [
               MealSearchBar(
-                hintText: widget.searchHint,
-                onSubmitted: (query) {
-                  context.read<T>().setSearchQuery(query);
-                },
-                onClear: () {
-                  context.read<T>().setSearchQuery('');
-                },
+                hintText: type.searchHint,
+                onSubmitted: _handleSearch,
+                onClear: () => context.read<T>().setSearchQuery(''),
               ),
               ImageSizeSelector(
                 selectedSize: viewModel.selectedSize,
-                onSelected: (size) {
-                  context.read<T>().setSelectedSize(size);
-                },
+                onSelected: (size) => context.read<T>().setSelectedSize(size),
               ),
               Expanded(
                 child: viewModel.displayedMeals.isEmpty
@@ -131,12 +135,6 @@ class _MealCollectionScreenState<T extends MealCollectionViewModel>
                     : MealsGrid(
                         meals: viewModel.displayedMeals,
                         size: viewModel.selectedSize,
-                        onMealTap: (meal) async {
-                          await MealDetailScreen.navigate(context, meal);
-                          if (context.mounted) {
-                            context.read<T>().loadMeals();
-                          }
-                        },
                       ),
               ),
             ],

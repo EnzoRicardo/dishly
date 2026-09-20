@@ -10,10 +10,6 @@ class CookedMealsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MealCollectionScreen<CookedMealsViewModel>(
-      title: 'Pratos Cozinhados',
-      searchHint: 'Buscar nos cozinhados...',
-      emptyIcon: Icons.restaurant_outlined,
-      emptyMessage: 'Nenhum prato cozinhado ainda.',
       collectionType: CollectionType.cooked,
     );
   }
